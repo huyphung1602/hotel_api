@@ -31,6 +31,7 @@ class HotelStructureNormalizer
 
   ADHOC_COLUMNS_MERGE = {
     description: true,
+    images: true,
   }.freeze
 
   class << self
@@ -61,7 +62,7 @@ class HotelStructureNormalizer
         stripped_value = strip_value(value)
 
         if ADHOC_COLUMNS_MERGE[column_name.to_sym].present?
-          send("merge_#{column_name}", merging_row[column_name], stripped_value)
+          merging_row[column_name] = send("merge_#{column_name}", merging_row[column_name], stripped_value)
         elsif LOCATION_GROUPING[column_name.to_sym].present?
           merging_row['location'][column_name] = merge_column(merging_row['location'][column_name], stripped_value)
         else
@@ -82,9 +83,52 @@ class HotelStructureNormalizer
 
     # Adhoc codes for description
     def merge_description(merging_row_description, raw_row_description)
-      return raw_row_description if merging_row_description.nil?
-      longer_description = merging_row_description.size > raw_row_description.size ? merging_row_description : raw_row_description
+      merging_string = merging_row_description.to_s
+      raw_string = raw_row_description.to_s
+      longer_description = merging_string.size > raw_string.size ? merging_string : raw_string
       longer_description
+    end
+
+    def merge_images(merging_image_hash, raw_images_hash)
+      normalized_images = normalize_image(raw_images_hash)
+
+      # Merge images in the existed key
+      merging_image_hash = if merging_image_hash.present?
+        merging_image_hash.reduce({}) do |hash, (key, value)|
+          current_image_links = value.reduce({}) do |hash, image|
+            hash[image['link']] = true
+            hash
+          end
+
+          if normalized_images[key].present?
+            normalized_images[key].each do |image|
+              value << image unless current_image_links[image['link']].present?
+            end
+          end
+
+          hash[key] = value
+          hash
+        end
+      else
+        normalized_images
+      end
+
+      normalized_images.merge(merging_image_hash) # merge new keys
+    end
+
+    def normalize_image(images_hash)
+      images_hash.reduce({}) do |hash, (key, images)|
+        hash[key] = images.map do |image|
+          link = image['link'] || image['url']
+          caption = image['caption'] || image['description']
+          {
+            'link'=>link,
+            'description'=>caption,
+          }
+        end
+
+        hash
+      end
     end
   end
 end
