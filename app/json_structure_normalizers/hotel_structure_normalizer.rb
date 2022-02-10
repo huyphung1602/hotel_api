@@ -17,6 +17,7 @@ class HotelStructureNormalizer
     details: 'description',
     info: 'description',
     amenities: 'amenities',
+    facilities: 'amenities',
     images: 'images',
     booking_conditions: 'booking_conditions',
   }.freeze
@@ -27,11 +28,12 @@ class HotelStructureNormalizer
     address: true,
     city: true,
     country: true,
-  }
+  }.freeze
 
   ADHOC_COLUMNS_MERGE = {
-    description: true,
-    images: true,
+    description: 'merge_description',
+    images: 'merge_images',
+    amenities: 'merge_amenities',
   }.freeze
 
   class << self
@@ -59,10 +61,10 @@ class HotelStructureNormalizer
         column_name = COLUMN_ALIASES_MAPPING[key.underscore.to_sym]
 
         next if column_name.nil?
-        stripped_value = strip_value(value)
+        stripped_value = value.is_a?(String) ? value.strip : value
 
         if ADHOC_COLUMNS_MERGE[column_name.to_sym].present?
-          merging_row[column_name] = send("merge_#{column_name}", merging_row[column_name], stripped_value)
+          merging_row[column_name] = send(ADHOC_COLUMNS_MERGE[column_name.to_sym], merging_row[column_name], stripped_value, key)
         elsif LOCATION_GROUPING[column_name.to_sym].present?
           merging_row['location'][column_name] = merge_column(merging_row['location'][column_name], stripped_value)
         else
@@ -73,23 +75,34 @@ class HotelStructureNormalizer
       merging_row
     end
 
-    def strip_value(value)
-      value.is_a?(String) ? value.strip : value
-    end
+    private
 
     def merge_column(merging_row_value, value)
       merging_row_value.present? ? merging_row_value : value
     end
 
-    # Adhoc codes for description
-    def merge_description(merging_row_description, raw_row_description)
+    def merge_amenities(merging_amenities_hash, amenities_value, raw_column_name)
+      result = merging_amenities_hash.present? ? merging_amenities_hash : {'general' => [], 'room' => []}
+
+      if raw_column_name.underscore == 'facilities'
+        result['general'] |= amenities_value.map { |value| value.underscore.humanize.downcase.strip }
+      elsif raw_column_name.underscore == 'amenities' && amenities_value.is_a?(Array)
+        result['room'] |= amenities_value.map { |value| value.underscore.humanize.downcase.strip }
+      else
+        result = amenities_value
+      end
+
+      result
+    end
+
+    def merge_description(merging_row_description, raw_row_description, _)
       merging_string = merging_row_description.to_s
       raw_string = raw_row_description.to_s
       longer_description = merging_string.size > raw_string.size ? merging_string : raw_string
       longer_description
     end
 
-    def merge_images(merging_image_hash, raw_images_hash)
+    def merge_images(merging_image_hash, raw_images_hash, _)
       normalized_images = normalize_image(raw_images_hash)
 
       # Merge images in the existed key
