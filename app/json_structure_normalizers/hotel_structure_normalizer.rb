@@ -50,6 +50,7 @@ class HotelStructureNormalizer
       json_data['destination_id'] || json_data['destination']
     end
 
+    # Add location key => select_correct_columns => strip value if needded => select between adhoc merge, location merge, normal merge
     def merge!(merging_row, raw_row)
       merging_row['location'] = {} if merging_row['location'].nil?
 
