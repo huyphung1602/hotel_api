@@ -6,10 +6,10 @@ class HotelStructureNormalizer
     destination: 'destination_id',
     name: 'name',
     hotel_name: 'name',
-    lat: 'latitude',
-    latitude: 'latitude',
-    lng: 'longitude',
-    longitude: 'longitude',
+    lat: 'lat',
+    latitude: 'lat',
+    lng: 'lng',
+    longitude: 'lng',
     address: 'address',
     city: 'city',
     country: 'country',
@@ -21,8 +21,16 @@ class HotelStructureNormalizer
     booking_conditions: 'booking_conditions',
   }.freeze
 
+  LOCATION_GROUPING = {
+    lat: true,
+    lng: true,
+    address: true,
+    city: true,
+    country: true,
+  }
+
   ADHOC_COLUMNS_MERGE = {
-    'description': true,
+    description: true,
   }.freeze
 
   class << self
@@ -43,25 +51,37 @@ class HotelStructureNormalizer
     end
 
     def merge!(merging_row, raw_row)
+      merging_row['location'] = {} if merging_row['location'].nil?
+
       raw_row.each do |key, value|
         column_name = COLUMN_ALIASES_MAPPING[key.underscore.to_sym]
 
         next if column_name.nil?
+        stripped_value = strip_value(value)
 
-        if !merging_row[column_name].present?
-          if ADHOC_COLUMNS_MERGE[column_name].present?
-            send("merge_#{column_name}", merging_row[column_name], value)
-          else
-            merging_row[column_name] = value
-          end
+        if ADHOC_COLUMNS_MERGE[column_name.to_sym].present?
+          send("merge_#{column_name}", merging_row[column_name], stripped_value)
+        elsif LOCATION_GROUPING[column_name.to_sym].present?
+          merging_row['location'][column_name] = merge_column(merging_row['location'][column_name], stripped_value)
+        else
+          merging_row[column_name] = merge_column(merging_row[column_name], stripped_value)
         end
       end
 
       merging_row
     end
 
+    def strip_value(value)
+      value.is_a?(String) ? value.strip : value
+    end
+
+    def merge_column(merging_row_value, value)
+      merging_row_value.present? ? merging_row_value : value
+    end
+
     # Adhoc codes for description
     def merge_description(merging_row_description, raw_row_description)
+      return raw_row_description if merging_row_description.nil?
       longer_description = merging_row_description.size > raw_row_description.size ? merging_row_description : raw_row_description
       longer_description
     end
