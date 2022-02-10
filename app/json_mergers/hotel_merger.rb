@@ -1,4 +1,4 @@
-class HotelStructureMerger
+class HotelMerger
   COLUMN_ALIASES_MAPPING = {
     id: 'id',
     hotel_id: 'id',
