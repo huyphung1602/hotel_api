@@ -1,7 +1,7 @@
 require 'net/http'
 require 'uri'
 
-class DataFetcherService
+class DataFetchingService
   class << self
     def fetch_data(source_type)
       sources = DataSources.get_source(source_type)

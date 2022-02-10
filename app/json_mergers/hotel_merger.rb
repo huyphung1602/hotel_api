@@ -45,7 +45,7 @@ class HotelMerger
       json_data['id'] || json_data['hotel_id'] || json_data['Id']
     end
 
-    def get_hotel_id(data)
+    def get_hotel_id(json_data)
       get_id(json_data)
     end
 
