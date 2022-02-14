@@ -6,8 +6,7 @@ class HotelsController < ApplicationController
     hotels = if lasted_cached_data.present?
       JSON.parse(lasted_cached_data)
     else
-      raw_hotels = ::DataFetchingService.fetch_data('hotels')
-      merged_hotels = ::DataMergingService.merge_data_structure(::HotelMerger, raw_hotels, hotel_filter)
+      merged_hotels = ::DataGatheringService.execute(:hotel, hotel_filter)
       Cache.set_cache(object_type: 'HotelJson', query_key: query_key, json_data: merged_hotels.to_json)
       merged_hotels
     end
