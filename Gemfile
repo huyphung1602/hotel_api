@@ -18,6 +18,8 @@ gem 'redis-namespace'
 gem 'redis-rails'
 gem 'redis-rack-cache'
 
+gem 'sidekiq'
+
 # Use Active Model has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
