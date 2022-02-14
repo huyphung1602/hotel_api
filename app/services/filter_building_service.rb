@@ -4,7 +4,7 @@ class FilterBuildingService
       if column_name.present?
         {
           column: column_name,
-          values: values.reduce({}) { |hash, value| hash[value] = true; hash; }
+          filter_values: values.reduce({}) { |hash, value| hash[value] = true; hash; }
         }
       else
         {}

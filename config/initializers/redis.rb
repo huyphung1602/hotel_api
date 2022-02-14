@@ -1,0 +1,1 @@
+$redis_cache = Redis::Namespace.new 'redis-cache', :redis => Redis.new

@@ -3,7 +3,7 @@ class DataMergingService
     def merge_data_structure(merger, raw_rows, filter = {})
       raw_rows.reduce({}) do |hash, row|
         if filter.present?
-          next hash if filter.present? && !filter[:values][merger.send("get_#{filter[:column]}", row).to_s]
+          next hash if filter.present? && !filter[:filter_values][merger.send("get_#{filter[:column]}", row).to_s]
         end
 
         merging_row_id = merger.get_id(row)
