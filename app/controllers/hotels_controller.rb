@@ -1,13 +1,15 @@
 class HotelsController < ApplicationController
   def index
     query_key = build_query_key(hotel_filter)
-    lasted_cached_data = Cache.retrive_lasted_cache(object_type: 'HotelJson', query_key: query_key)
+    lasted_cached_data = Cache.retrive_lasted_cache(object_type: 'hotel_json', query_key: query_key)
 
+    puts lasted_cached_data
     hotels = if lasted_cached_data.present?
+      SourceGatheringWorkerJob.perform_async('hotel_json', hotel_filter, query_key)
       JSON.parse(lasted_cached_data)
     else
-      merged_hotels = ::DataGatheringService.execute(:hotel, hotel_filter)
-      Cache.set_cache(object_type: 'HotelJson', query_key: query_key, json_data: merged_hotels.to_json)
+      merged_hotels = ::DataGatheringService.execute(source_type: 'hotel_json', filter: hotel_filter)
+      Cache.set_cache(object_type: 'hotel_json', query_key: query_key, json_data: merged_hotels.to_json)
       merged_hotels
     end
 

@@ -3,7 +3,7 @@ require 'uri'
 
 class DataGatheringService
   class << self
-    def execute(source_type, filter)
+    def execute(source_type:, filter:)
       fetched_data = fetch_data(source_type)
       merge_data_structure(source_type, fetched_data, filter)
     end

@@ -8,7 +8,7 @@ class DataSources
   class << self
     def get_source(source_type)
       case source_type.to_sym
-      when :hotel
+      when :hotel_json
         HOTEL_SOURCE_URLS
       else
         raise 'Unsupported source type'
@@ -17,7 +17,7 @@ class DataSources
 
     def get_merger(source_type)
       case source_type.to_sym
-      when :hotel
+      when :hotel_json
         HotelMerger
       else
         raise 'Unsupported source type'
