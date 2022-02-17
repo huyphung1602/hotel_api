@@ -11,7 +11,7 @@ class DataSources
       when :hotel_json
         HOTEL_SOURCE_URLS
       else
-        raise 'Unsupported source type'
+        raise ::DataSourcesError, 'Unsupported source type'
       end
     end
 
@@ -20,7 +20,7 @@ class DataSources
       when :hotel_json
         HotelMerger
       else
-        raise 'Unsupported source type'
+        raise ::DataSourcesError, 'Unsupported source type'
       end
     end
   end
