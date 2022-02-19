@@ -26,7 +26,7 @@ class DataGatheringService
 
     def merge_data_structure(source_type, raw_rows, filter = {})
       merger =  DataSources.get_merger(source_type)
-      raw_rows.reduce({}) do |hash, row|
+      merged_data_as_hash = raw_rows.reduce({}) do |hash, row|
         if filter.present?
           next hash if filter.present? && !filter[:filter_values][merger.send("get_#{filter[:column]}", row).to_s]
         end
@@ -38,6 +38,8 @@ class DataGatheringService
         hash[merging_row_id] = merged_row
         hash
       end
+
+      merged_data_as_hash.values
     end
   end
 end
