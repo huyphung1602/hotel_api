@@ -1,0 +1,1 @@
+class DataGatheringServiceError < AppError; end

@@ -17,7 +17,7 @@ class DataGatheringService
         if responses.is_a?(Array)
           arr += responses
         else
-          raise "Invalid response data: #{responses.inspect}"
+          raise DataGatheringServiceError, "Invalid response data, expecting parsed response as an array: #{responses.inspect}, method: fetch_data"
         end
 
         arr
