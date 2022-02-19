@@ -29,9 +29,9 @@ describe Cache do
   let(:query_key) { 'hotel_id_iJhz' }
 
   describe '.set_cache' do
-    context 'problem occur when set redis cache' do
+    context 'problem occurs when set redis cache' do
       before do
-        allow($redis_cache).to receive(:set).and_raise(StandardError.new('Keep bleeding in love'))
+        allow($redis_cache).to receive(:set).and_raise(StandardError.new('Gundam Exia'))
       end
 
       it 'should not create the related Cache record' do
@@ -46,6 +46,32 @@ describe Cache do
         expect(Cache.last.query_key).to eq query_key
         expect(Cache.last.object_type).to eq object_type
         expect($redis_cache.get(Cache.last.query_key)).to eq json_data
+      end
+    end
+  end
+
+  describe '.retrive_lasted_cache' do
+    context 'error occurs when retrive lasted cache' do
+      before do
+        allow($redis_cache).to receive(:get).and_raise(StandardError.new('Gundam Dynames'))
+      end
+
+      it 'should return nil cache data' do
+        described_class.set_cache(object_type: object_type, query_key: query_key, json_data: json_data)
+        expect(Cache.all.size).to eq 1
+
+        cache_data = described_class.retrive_lasted_cache(object_type: object_type, query_key: query_key)
+        expect(cache_data).to eq nil
+      end
+    end
+
+    context 'get cache successfully' do
+      it 'should get the expected data' do
+        described_class.set_cache(object_type: object_type, query_key: query_key, json_data: json_data)
+        expect(Cache.all.size).to eq 1
+
+        cache_data = described_class.retrive_lasted_cache(object_type: object_type, query_key: query_key)
+        expect(cache_data).to eq json_data
       end
     end
   end
