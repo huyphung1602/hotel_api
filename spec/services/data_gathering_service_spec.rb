@@ -39,4 +39,15 @@ describe DataGatheringService do
       end
     end
   end
+
+  describe '.execute' do
+    it 'return the expected data structure' do
+      VCR.use_cassette('hotel_json_datasources', match_requests_on: vcr_match_cond) do
+        merged_data = described_class.execute('hotel_json')
+        expect(merged_data.size).to eq 8
+        expect(raw_data_ids.uniq). to match_array ['iJhz', 'SjyX', 'f8c9']
+        expect(merged_data.first.keys).to match_array(['location', 'id', 'destination_id', 'name', 'description', 'amenities', 'images', 'booking_conditions'])
+      end
+    end
+  end
 end
