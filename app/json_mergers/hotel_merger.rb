@@ -37,10 +37,6 @@ class HotelMerger
   }.freeze
 
   class << self
-    def get_column_aliases_mapping
-      COLUMN_ALIASES_MAPPING
-    end
-
     def get_id(json_data)
       json_data['id'] || json_data['hotel_id'] || json_data['Id']
     end
