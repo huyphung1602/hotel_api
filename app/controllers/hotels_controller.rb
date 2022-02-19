@@ -41,6 +41,8 @@ class HotelsController < ApplicationController
   end
 
   def build_query_key(filter)
+    return 'full' if filter.nil? || filter == {}
+
     value_key = filter[:filter_values].keys.sort.reduce('') do |string, value|
       "#{string}_#{value.to_s}"
     end
