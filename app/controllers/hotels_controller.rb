@@ -1,9 +1,9 @@
 class HotelsController < ApplicationController
   def index
-    query_key = build_query_key(hotel_filter)
+    hotel_filter = hotel_filter_service.generate_filter
+    query_key = hotel_filter_service.generate_query_key
     lasted_cached_data = Cache.retrive_lasted_cache(object_type: 'hotel_json', query_key: query_key)
 
-    puts lasted_cached_data
     hotels = if lasted_cached_data.present?
       SourceGatheringWorkerJob.perform_async('hotel_json', hotel_filter, query_key)
       JSON.parse(lasted_cached_data)
@@ -28,7 +28,7 @@ class HotelsController < ApplicationController
     params[:destinations]
   end
 
-  def hotel_filter
+  def hotel_filter_service
     column_name, values = if hotel_ids.present?
       values = params[:hotels].is_a?(Array) ? params[:hotels] : [params[:hotels]]
       ['hotel_id', values]
@@ -37,16 +37,6 @@ class HotelsController < ApplicationController
       ['destination_id', values]
     end
 
-    FilterBuildingService.generate_filter(column_name, values)
-  end
-
-  def build_query_key(filter)
-    return 'full' if filter.nil? || filter == {}
-
-    value_key = filter[:filter_values].keys.sort.reduce('') do |string, value|
-      "#{string}_#{value.to_s}"
-    end
-
-    "#{filter[:column]}#{value_key}"
+    FilterBuildingService.new(column_name, values)
   end
 end
