@@ -31,6 +31,7 @@ class DataGatheringService
 
   rescue => e
     job.failed if job.present?
+    raise e
   end
 
   private
