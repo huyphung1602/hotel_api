@@ -8,31 +8,26 @@ class Job < ApplicationRecord
     success: 1,
     failure: 2,
     created: 3,
+    already_existed: 4,
   }
 
-  def self.set_job(source_id:, source_type:, status: 3)
-    Job.create(source_id: source_id, source_type: source_type, status: 3)
-  end
-
-  def update_status
-    update(status: status)
-  end
-
   def start
-    update(start_time: Time.current)
+    update(start_time: Time.current, status: 'running')
   end
 
-  def end
-    update(end_time: Time.current)
+  def success
+    update(end_time: Time.current, status: 'success')
   end
 
-  def add_log(message, level = 'info')
-    logs = [] if logs.nil?
-    logs << "#{level.upcase} --- #{message}"
-    update(logs: logs)
+  def fail
+    update(end_time: Time.current, status: 'failed')
   end
-  
-  def add_logs(messages)
-    update(logs: messages)
+
+  def already_existed
+    update(end_time: Time.current, status: 'already_existed')
+  end
+
+  def self.any_running_job_with_query_key(source_type, query_key)
+    where(source_type: source_type, query_key: query_key, status: 'running').any?
   end
 end

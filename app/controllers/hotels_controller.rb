@@ -5,10 +5,11 @@ class HotelsController < ApplicationController
     lasted_cached_data = Cache.retrive_lasted_cache(object_type: 'hotel_json', query_key: query_key)
 
     hotels = if lasted_cached_data.present?
-      SourceGatheringWorkerJob.perform_async('hotel_json', hotel_filter, query_key)
+      job = Job.create(source_type: 'hotel_json', query_key: query_key)
+      SourceGatheringWorkerJob.perform_async('hotel_json', hotel_filter, query_key, job.id)
       JSON.parse(lasted_cached_data)
     else
-      merged_hotels = ::DataGatheringService.execute(source_type: 'hotel_json', filter: hotel_filter)
+      merged_hotels = ::DataGatheringService.new(source_type: 'hotel_json', filter: hotel_filter).execute
       Cache.set_cache(object_type: 'hotel_json', query_key: query_key, json_data: merged_hotels.to_json)
       merged_hotels
     end
