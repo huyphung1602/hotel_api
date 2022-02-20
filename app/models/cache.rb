@@ -1,4 +1,7 @@
 class Cache < ApplicationRecord
+  validates :object_type, presence: true
+  validates :query_key, presence: true
+
   def self.set_cache(object_type:, query_key:, json_data:)
     ActiveRecord::Base.transaction do
       $redis_cache.set(query_key, json_data)
