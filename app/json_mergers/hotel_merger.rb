@@ -13,6 +13,7 @@ class HotelMerger
     address: 'address',
     city: 'city',
     country: 'country',
+    location: 'location',
     description: 'description',
     details: 'description',
     info: 'description',
@@ -27,11 +28,11 @@ class HotelMerger
     lng: true,
     address: true,
     city: true,
-    country: true,
+    country: true, 
+    location: true,
   }.freeze
 
   ADHOC_COLUMNS_MERGE = {
-    description: 'merge_description',
     images: 'merge_images',
     amenities: 'merge_amenities',
   }.freeze
@@ -46,7 +47,7 @@ class HotelMerger
     end
 
     def get_destination_id(json_data)
-      json_data['destination_id'] || json_data['destination']
+      json_data['destination_id'] || json_data['destination'] || json_data['DestinationId']
     end
 
     # Add location key => select_correct_columns => strip value if needded => select between adhoc merge, location merge, normal merge
@@ -62,7 +63,7 @@ class HotelMerger
         if ADHOC_COLUMNS_MERGE[column_name.to_sym].present?
           merging_row[column_name] = send(ADHOC_COLUMNS_MERGE[column_name.to_sym], merging_row[column_name], stripped_value, key)
         elsif LOCATION_GROUPING[column_name.to_sym].present?
-          merging_row['location'][column_name] = merge_column(merging_row['location'][column_name], stripped_value)
+          merge_location(merging_row, stripped_value, column_name)
         else
           merging_row[column_name] = merge_column(merging_row[column_name], stripped_value)
         end
@@ -73,8 +74,18 @@ class HotelMerger
 
     private
 
-    def merge_column(merging_row_value, value)
-      merging_row_value.present? ? merging_row_value : value
+    def merge_column(merging_value, stripped_value)
+      if merging_value.is_a?(String) || stripped_value.is_a?(String)
+        merge_string(merging_value, stripped_value)
+      else
+        merging_value.present? ? merging_value : stripped_value
+      end
+    end
+
+    def merge_string(merging_value, stripped_value)
+      merging_string = merging_value.to_s
+      raw_string = stripped_value.to_s
+      merging_string.size > raw_string.size ? merging_string : raw_string  
     end
 
     def merge_amenities(merging_amenities_hash, amenities_value, raw_column_name)
@@ -91,11 +102,14 @@ class HotelMerger
       result
     end
 
-    def merge_description(merging_row_description, raw_row_description, _)
-      merging_string = merging_row_description.to_s
-      raw_string = raw_row_description.to_s
-      longer_description = merging_string.size > raw_string.size ? merging_string : raw_string
-      longer_description
+    def merge_location(merging_row, location_value, column_name)
+      if column_name == 'location'
+        location_value.each do |k, v|
+          merging_row['location'][k] = merge_column(merging_row['location'][k], v)
+        end
+      else
+        merging_row['location'][column_name] = merge_column(merging_row['location'][column_name], location_value)
+      end
     end
 
     def merge_images(merging_image_hash, raw_images_hash, _)
