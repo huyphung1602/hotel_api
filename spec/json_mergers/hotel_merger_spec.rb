@@ -49,7 +49,7 @@ describe HotelMerger do
     context 'merging_row is empty' do
       let(:expected_result) {
         {
-          'location'=>{},
+          'location'=>{'address'=>'8 Sentosa Gateway, Beach Villas, 098269', 'country'=>'Singapore'},
           'id'=>'iJhz',
           'destination_id'=>5432,
           'name'=>'Beach Villas Singapore',
@@ -77,7 +77,7 @@ describe HotelMerger do
     context 'merging_row contains data' do
       let(:expected_result) {
         {
-          'location'=>{'lat'=>1.264751, 'lng'=>103.824006, 'address'=>'8 Sentosa Gateway, Beach Villas', 'city'=>'Singapore', 'country'=>'SG'},
+          'location'=>{'address'=>'8 Sentosa Gateway, Beach Villas, 098269', 'country'=>'Singapore', 'lat'=>1.264751, 'lng'=>103.824006, 'city'=>'Singapore'},
           'id'=>'iJhz',
           'destination_id'=>5432,
           'name'=>'Beach Villas Singapore',
