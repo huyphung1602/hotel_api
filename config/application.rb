@@ -37,6 +37,7 @@ module HotelApi
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    config.active_record.cache_versioning = false
     config.cache_store = :redis_store, {
       host: "localhost",
       port: 6379,
