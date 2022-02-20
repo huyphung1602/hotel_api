@@ -17,5 +17,3 @@ test:
 production:
   <<: *default
   database: hotel_api_production
-  username: hotel_api
-  password: <%= ENV['HOTEL_DATABASE_PASSWORD'] %>
