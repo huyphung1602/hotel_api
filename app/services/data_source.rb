@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DataSource
   HOTEL_SOURCE_URLS = [
     'http://www.mocky.io/v2/5ebbea102e000029009f3fff',

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe DataGatheringService do
@@ -9,8 +11,9 @@ describe DataGatheringService do
         VCR.use_cassette('hotel_json_DataSource', match_requests_on: vcr_match_cond) do
           merged_data = described_class.new(source_type: 'hotel_json', filters: {}).execute
           expect(merged_data.size).to eq 3
-          expect(merged_data.map { |record| record['id'] }). to match_array ['iJhz', 'SjyX', 'f8c9']
-          expect(merged_data.first.keys).to match_array(['location', 'id', 'destination_id', 'name', 'description', 'amenities', 'images', 'booking_conditions'])
+          expect(merged_data.map { |record| record['id'] }).to match_array ['iJhz', 'SjyX', 'f8c9']
+          expect(merged_data.first.keys).to match_array(['location', 'id', 'destination_id', 'name', 'description',
+                                                         'amenities', 'images', 'booking_conditions',])
         end
       end
     end
@@ -21,7 +24,9 @@ describe DataGatheringService do
       end
 
       it 'raise invalid response data' do
-        expect { described_class.new(source_type: 'hotel_json', filters: {}).execute }.to raise_error(DataGatheringServiceError)
+        expect do
+          described_class.new(source_type: 'hotel_json', filters: {}).execute
+        end.to raise_error(DataGatheringServiceError)
       end
     end
   end

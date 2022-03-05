@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
@@ -15,8 +17,8 @@ gem 'puma', '~> 5.0'
 # Use Redis adapter to run Action Cable in production
 gem 'redis'
 gem 'redis-namespace'
-gem 'redis-rails'
 gem 'redis-rack-cache'
+gem 'redis-rails'
 
 gem 'sidekiq'
 

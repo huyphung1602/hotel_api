@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Cache < ApplicationRecord
   validates :object_type, presence: true
   validates :query_key, presence: true
@@ -7,7 +9,7 @@ class Cache < ApplicationRecord
       $redis_cache.set(query_key, json_data)
       Cache.create(object_type: object_type, query_key: query_key)
     # We log the error because caching the data is should not raise error that block the main procedure (which is return the data)
-    rescue => e
+    rescue StandardError => e
       Rails.logger.error "Fail to set cach for #{object_type} with #{query_key}"
       Rails.logger.error e.inspect
     end
@@ -15,16 +17,14 @@ class Cache < ApplicationRecord
 
   def self.retrive_lasted_cache(object_type:, query_key:)
     cache_key = Cache.where(object_type: object_type, query_key: query_key).order(created_at: :desc).first&.query_key
-    data = if cache_key.present?
+    if cache_key.present?
       $redis_cache.get(query_key)
     else
       nil
     end
 
-    data
-
   # We log the error because getting the data from cache should not raise error that block the main procedure (which is return the data)
-  rescue => e
+  rescue StandardError => e
     Rails.logger.error "Fail to get data from cache for #{object_type} with #{query_key}"
     Rails.logger.error e.inspect
     nil
@@ -32,6 +32,7 @@ class Cache < ApplicationRecord
 
   def self.generate_query_key(filter_columns)
     return 'full' unless filter_columns.present?
+
     filter_columns.map do |column_name, filter_values|
       "#{column_name}_#{filter_values.sort.join('_')}"
     end.join('_')

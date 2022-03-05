@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 class DataGatheringWorker
   include Sidekiq::Job
 
   def perform(source_type, filter, query_key, job_id)
     # Dedup the job if it already existed
-    if Job.any_running_job_with_query_key(source_type, query_key) 
+    if Job.any_running_job_with_query_key(source_type, query_key)
       Job.find(job_id).already_existed
       return
     end

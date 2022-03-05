@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe FilterGenerator do
@@ -19,7 +21,7 @@ describe FilterGenerator do
       end
       let(:expected_filters) do
         [
-          { column_name: :souls_like, filter_values: { 'sekiro'=>true, 'nioh'=>true, 'dark_soul'=> true } },
+          { column_name: :souls_like, filter_values: { 'sekiro' => true, 'nioh' => true, 'dark_soul' => true } },
         ]
       end
 
@@ -37,8 +39,8 @@ describe FilterGenerator do
       end
       let(:expected_filters) do
         [
-          { column_name: :hunter, filter_values: { 'gon'=>true, 'hisoka'=>true, 'killua'=> true } },
-          { column_name: :type, filter_values: { 'anime'=>true, 'horror'=>true, 'action'=>true} },
+          { column_name: :hunter, filter_values: { 'gon' => true, 'hisoka' => true, 'killua' => true } },
+          { column_name: :type, filter_values: { 'anime' => true, 'horror' => true, 'action' => true } },
         ]
       end
 

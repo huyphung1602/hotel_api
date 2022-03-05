@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Mergers
   class HotelMerger
     COLUMN_ALIASES_MAPPING = {
@@ -29,7 +31,7 @@ module Mergers
       lng: true,
       address: true,
       city: true,
-      country: true, 
+      country: true,
       location: true,
     }.freeze
 
@@ -59,10 +61,12 @@ module Mergers
           column_name = COLUMN_ALIASES_MAPPING[key.underscore.to_sym]
 
           next if column_name.nil?
+
           stripped_value = value.is_a?(String) ? value.strip : value
 
           if ADHOC_COLUMNS_MERGE[column_name.to_sym].present?
-            merging_row[column_name] = send(ADHOC_COLUMNS_MERGE[column_name.to_sym], merging_row[column_name], stripped_value, key)
+            merging_row[column_name] =
+              send(ADHOC_COLUMNS_MERGE[column_name.to_sym], merging_row[column_name], stripped_value, key)
           elsif LOCATION_GROUPING[column_name.to_sym].present?
             merge_location(merging_row, stripped_value, column_name)
           else
@@ -86,11 +90,11 @@ module Mergers
       def merge_string(merging_value, stripped_value)
         merging_string = merging_value.to_s
         raw_string = stripped_value.to_s
-        merging_string.size > raw_string.size ? merging_string : raw_string  
+        merging_string.size > raw_string.size ? merging_string : raw_string
       end
 
       def merge_amenities(merging_amenities_hash, amenities_value, raw_column_name)
-        result = merging_amenities_hash.present? ? merging_amenities_hash : {'general' => [], 'room' => []}
+        result = merging_amenities_hash.present? ? merging_amenities_hash : { 'general' => [], 'room' => [] }
 
         if raw_column_name.underscore == 'facilities'
           result['general'] |= amenities_value.map { |value| value.underscore.humanize.downcase.strip }
@@ -118,40 +122,36 @@ module Mergers
 
         # Merge images in the existed key
         merging_image_hash = if merging_image_hash.present?
-          merging_image_hash.reduce({}) do |hash, (key, value)|
-            current_image_links = value.reduce({}) do |hash, image|
-              hash[image['link']] = true
-              hash
-            end
+                               merging_image_hash.each_with_object({}) do |(key, value), hash|
+                                 current_image_links = value.each_with_object({}) do |image, hash|
+                                   hash[image['link']] = true
+                                 end
 
-            if normalized_images[key].present?
-              normalized_images[key].each do |image|
-                value << image unless current_image_links[image['link']].present?
-              end
-            end
+                                 if normalized_images[key].present?
+                                   normalized_images[key].each do |image|
+                                     value << image unless current_image_links[image['link']].present?
+                                   end
+                                 end
 
-            hash[key] = value
-            hash
-          end
-        else
-          normalized_images
-        end
+                                 hash[key] = value
+                               end
+                             else
+                               normalized_images
+                             end
 
         normalized_images.merge(merging_image_hash) # merge new keys
       end
 
       def normalize_image(images_hash)
-        images_hash.reduce({}) do |hash, (key, images)|
-          hash[key] = images.map do |image|
+        images_hash.transform_values do |images|
+          images.map do |image|
             link = image['link'] || image['url']
             caption = image['caption'] || image['description']
             {
-              'link'=>link,
-              'description'=>caption,
+              'link' => link,
+              'description' => caption,
             }
           end
-
-          hash
         end
       end
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Merger
   def self.get_merger(source_type)
     case source_type.to_sym

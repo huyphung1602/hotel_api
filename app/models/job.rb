@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 class Job < ApplicationRecord
   validates :source_type, presence: true
   validates :status, presence: true
 
   enum status: {
-    # Note: -1 is used in JobFlow's get_next_jobs so don't use it
+    # NOTE: -1 is used in JobFlow's get_next_jobs so don't use it
     running: 0,
     success: 1,
     failure: 2,
