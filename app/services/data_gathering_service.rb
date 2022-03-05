@@ -4,9 +4,9 @@ require 'net/http'
 require 'uri'
 
 class DataGatheringService
-  def initialize(source_type:, filters:, job_id: nil)
+  def initialize(source_type:, filter_columns:, job_id: nil)
     @source_type = source_type
-    @filters = filters
+    @filters = FilterGenerator.generate_filters(filter_columns)
     @job = Job.find_by_id(job_id)
   end
 
