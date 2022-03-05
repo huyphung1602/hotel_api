@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DataFilter
   def initialize(source_type, filter_columns, rows)
     @rows = rows

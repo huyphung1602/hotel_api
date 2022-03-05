@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 class DataMerger
-  def self.execute(source_type, raw_rows)
-    merger = get_merger(source_type)
-    data_source = DataSource.get_source(source_type)
+  def initialize(source_type)
+    @data_source = DataSource.get_source(source_type)
+    @merger = get_merger(source_type)
+  end
 
+  def execute(raw_rows)
     merged_data_as_hash = raw_rows.each_with_object({}) do |row, hash|
       merging_row_id = data_source.get_id(row)
 
@@ -18,7 +20,9 @@ class DataMerger
 
   private
 
-  def self.get_merger(source_type)
+  attr_reader :data_source, :merger
+
+  def get_merger(source_type)
     case source_type.to_sym
     when :hotel_json
       Mergers::HotelMerger
