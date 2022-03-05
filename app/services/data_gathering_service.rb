@@ -2,9 +2,9 @@ require 'net/http'
 require 'uri'
 
 class DataGatheringService
-  def initialize(source_type:, filter:, job_id: nil)
+  def initialize(source_type:, filters:, job_id: nil)
     @source_type = source_type
-    @filter = filter
+    @filters = filters
     @job = Job.find_by_id(job_id)
   end
 
@@ -14,9 +14,7 @@ class DataGatheringService
     raw_rows = fetch_data
     merger =  DataSources.get_merger(source_type)
     merged_data_as_hash = raw_rows.reduce({}) do |hash, row|
-      if filter.present?
-        next hash if filter.present? && !filter[:filter_values][merger.send("get_#{filter[:column]}", row).to_s]
-      end
+      next hash if filtered_out_row?(filters, merger, row)
 
       merging_row_id = merger.get_id(row)
 
@@ -36,7 +34,7 @@ class DataGatheringService
 
   private
 
-  attr_reader :source_type, :filter, :job
+  attr_reader :source_type, :filters, :job
 
   def fetch_data
     sources = DataSources.get_source(source_type)
@@ -52,5 +50,13 @@ class DataGatheringService
 
       arr
     end
+  end
+
+  def filtered_out_row?(filters, merger, row)
+    filters.each do |filter|
+      return true if !filter[:filter_values][merger.send("get_#{filter[:column_name]}", row).to_s]
+    end
+
+    false
   end
 end

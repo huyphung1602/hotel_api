@@ -5,6 +5,7 @@ This is a rails-api which will fetch the hotels json data from multiple sources 
 Call the api via Heroku: https://hotel-api-huyphung.herokuapp.com/hotels/index
 - Query data using hotel ids: `/hotels?hotels[]=SjyX&hotels[]=iJhz`
 - Query data using destination ids: `/hotels?destinations[]=5432`
+- Query data using both hotel ids and destination ids: `/hotels?destinations[]=5432&hotels[]=iJhz`
 
 # High Level Design
 There are two main parts of this service. The first one is fetchning the data. The second one is merging the data into a structure.

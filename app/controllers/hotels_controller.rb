@@ -1,15 +1,16 @@
 class HotelsController < ApplicationController
   def index
-    hotel_filter = hotel_filter_service.generate_filter
-    query_key = hotel_filter_service.generate_query_key
+    filters = FilterGenerator.generate_filters(filter_columns)
+    puts filters
+    query_key = Cache.generate_query_key(filter_columns)
     lasted_cached_data = Cache.retrive_lasted_cache(object_type: 'hotel_json', query_key: query_key)
 
     hotels = if lasted_cached_data.present?
       job = Job.create(source_type: 'hotel_json', query_key: query_key)
-      SourceGatheringWorkerJob.perform_async('hotel_json', hotel_filter, query_key, job.id)
+      SourceGatheringWorkerJob.perform_async('hotel_json', filters, query_key, job.id)
       JSON.parse(lasted_cached_data)
     else
-      merged_hotels = ::DataGatheringService.new(source_type: 'hotel_json', filter: hotel_filter).execute
+      merged_hotels = ::DataGatheringService.new(source_type: 'hotel_json', filters: filters).execute
       Cache.set_cache(object_type: 'hotel_json', query_key: query_key, json_data: merged_hotels.to_json)
       merged_hotels
     end
@@ -22,22 +23,17 @@ class HotelsController < ApplicationController
   private
 
   def hotel_ids
-    params[:hotels]
+    Array.wrap(params[:hotels])
   end
 
   def destination_ids
-    params[:destinations]
+    Array.wrap(params[:destinations])
   end
 
-  def hotel_filter_service
-    column_name, values = if hotel_ids.present?
-      values = params[:hotels].is_a?(Array) ? params[:hotels] : [params[:hotels]]
-      ['hotel_id', values]
-    elsif destination_ids.present?
-      values = params[:destinations].is_a?(Array) ? params[:destinations] : [params[:destinations]]
-      ['destination_id', values]
-    end
-
-    FilterBuildingService.new(column_name, values)
+  def filter_columns
+    filter_columns = {}
+    filter_columns[:hotel_id] = hotel_ids if hotel_ids.present?
+    filter_columns[:destination_id] = destination_ids if destination_ids.present?
+    filter_columns
   end
 end

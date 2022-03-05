@@ -29,4 +29,11 @@ class Cache < ApplicationRecord
     Rails.logger.error e.inspect
     nil
   end
+
+  def self.generate_query_key(filter_columns)
+    return 'full' unless filter_columns.present?
+    filter_columns.map do |column_name, filter_values|
+      "#{column_name}_#{filter_values.sort.join('_')}"
+    end.join('_')
+  end
 end
