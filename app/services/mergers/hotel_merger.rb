@@ -41,18 +41,6 @@ module Mergers
     }.freeze
 
     class << self
-      def get_id(json_data)
-        json_data['id'] || json_data['hotel_id'] || json_data['Id']
-      end
-
-      def get_hotel_id(json_data)
-        get_id(json_data)
-      end
-
-      def get_destination_id(json_data)
-        json_data['destination_id'] || json_data['destination'] || json_data['DestinationId']
-      end
-
       # Add location key => select_correct_columns => strip value if needded => select between adhoc merge, location merge, normal merge
       def merge!(merging_row, raw_row)
         merging_row['location'] = {} if merging_row['location'].nil?
