@@ -1,0 +1,1 @@
+class DataSourceError < AppError; end

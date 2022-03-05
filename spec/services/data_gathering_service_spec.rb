@@ -6,7 +6,7 @@ describe DataGatheringService do
   describe '.execute' do
     context 'response data is valid' do
       it 'return the expected data structure' do
-        VCR.use_cassette('hotel_json_datasources', match_requests_on: vcr_match_cond) do
+        VCR.use_cassette('hotel_json_DataSource', match_requests_on: vcr_match_cond) do
           merged_data = described_class.new(source_type: 'hotel_json', filters: {}).execute
           expect(merged_data.size).to eq 3
           expect(merged_data.map { |record| record['id'] }). to match_array ['iJhz', 'SjyX', 'f8c9']

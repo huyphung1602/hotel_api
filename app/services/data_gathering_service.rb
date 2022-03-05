@@ -12,7 +12,7 @@ class DataGatheringService
     job.start if job.present?
 
     raw_rows = fetch_data
-    merger =  DataSources.get_merger(source_type)
+    merger =  Merger.get_merger(source_type)
     merged_data_as_hash = raw_rows.reduce({}) do |hash, row|
       next hash if filtered_out_row?(filters, merger, row)
 
@@ -37,7 +37,7 @@ class DataGatheringService
   attr_reader :source_type, :filters, :job
 
   def fetch_data
-    sources = DataSources.get_source(source_type)
+    sources = DataSource.get_source(source_type)
     sources.reduce([]) do |arr, source|
       uri = URI(source)
       responses = JSON.parse(Net::HTTP.get(uri))

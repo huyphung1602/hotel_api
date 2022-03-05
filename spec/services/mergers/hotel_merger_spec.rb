@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe HotelMerger do
+describe Mergers::HotelMerger do
   let(:raw_rows) {
     [
       {'hotel_id'=>'iJhz',
