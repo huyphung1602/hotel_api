@@ -5,14 +5,12 @@ class Cache < ApplicationRecord
   validates :query_key, presence: true
 
   def self.set_cache(object_type:, query_key:, json_data:)
-    ActiveRecord::Base.transaction do
-      RedisCache.redis.set(query_key, json_data)
-      Cache.create(object_type: object_type, query_key: query_key)
+    Cache.create!(object_type: object_type, query_key: query_key)
+    RedisCache.redis.set(query_key, json_data)
     # We log the error because caching the data is should not raise error that block the main procedure (which is return the data)
-    rescue StandardError => e
-      Rails.logger.error "Fail to set cach for #{object_type} with #{query_key}"
-      Rails.logger.error e.inspect
-    end
+  rescue StandardError => e
+    Rails.logger.error "Fail to set cach for #{object_type} with #{query_key}"
+    Rails.logger.error e.inspect
   end
 
   def self.retrive_lasted_cache(object_type:, query_key:)
