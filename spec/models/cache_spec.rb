@@ -39,7 +39,7 @@ describe Cache do
   describe '.set_cache' do
     context 'problem occurs when set redis cache' do
       before do
-        allow($redis_cache).to receive(:set).and_raise(StandardError.new('Gundam Exia'))
+        allow(RedisCache.redis).to receive(:set).and_raise(StandardError.new('Gundam Exia'))
       end
 
       it 'should not create the related Cache record' do
@@ -53,7 +53,7 @@ describe Cache do
         described_class.set_cache(object_type: object_type, query_key: query_key, json_data: json_data)
         expect(Cache.last.query_key).to eq query_key
         expect(Cache.last.object_type).to eq object_type
-        expect($redis_cache.get(Cache.last.query_key)).to eq json_data
+        expect(RedisCache.redis.get(Cache.last.query_key)).to eq json_data
       end
     end
   end
@@ -61,7 +61,7 @@ describe Cache do
   describe '.retrive_lasted_cache' do
     context 'error occurs when retrive lasted cache' do
       before do
-        allow($redis_cache).to receive(:get).and_raise(StandardError.new('Gundam Dynames'))
+        allow(RedisCache.redis).to receive(:get).and_raise(StandardError.new('Gundam Dynames'))
       end
 
       it 'should return nil cache data' do
