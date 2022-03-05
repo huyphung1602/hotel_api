@@ -17,7 +17,7 @@ class DataFetcher
       arr
 
     rescue StandardError => e
-      Rails.logger.error "#{DataFetcher}: #{e.inspect}"
+      Rails.logger.error "DataFetcher: #{e.inspect}"
       arr
     end
   end
