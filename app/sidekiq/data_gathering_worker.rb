@@ -1,4 +1,4 @@
-class SourceGatheringWorkerJob
+class DataGatheringWorker
   include Sidekiq::Job
 
   def perform(source_type, filter, query_key, job_id)
