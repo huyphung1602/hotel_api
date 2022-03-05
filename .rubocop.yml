@@ -1,0 +1,173 @@
+AllCops:
+  DisplayStyleGuide: true
+  ExtraDetails: true
+  NewCops: enable
+  Exclude:
+    - 'db/schema.rb'
+
+# Severity:
+# * convention: often good to follow, mostly for readability. Only lint in development
+# * warning: often necessary to follow. Linting enabled on CI
+# * error: mandatory. Any error will fail CI
+
+Metrics:
+  Severity: convention
+Style:
+  Severity: warning
+Layout:
+  Severity: convention
+Lint:
+  Severity: warning
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  Max: 25
+  IgnoredMethods: ['refine', describe', 'context', 'it']
+  CountAsOne: ['heredoc']
+
+Metrics/MethodLength:
+  Max: 15
+  IgnoredMethods: ['refine', describe', 'context', 'it']
+  CountAsOne: ['heredoc']
+
+Metrics/AbcSize:
+  Max: 20
+  IgnoredMethods: ['refine', describe', 'context', 'it']
+
+Lint/ShadowingOuterLocalVariable:
+  Enabled: false
+
+Style/CaseLikeIf:
+  Severity: convention
+
+Style/ClassAndModuleChildren:
+  # Nesting allow referencing other classes and modules within the module tree more conveniently,
+  # while the compact style reduces the level of nesting in the whole file.
+  # The pros and cons are quite equal so both are fine.
+  Enabled: false
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/Documentation:
+  Severity: convention
+
+Layout/FirstArrayElementIndentation:
+  # similar to JS style; occupy less horizontal space
+  EnforcedStyle: consistent
+
+Lint/UnusedMethodArgument:
+  # It might be hard to avoid unused method arguments especially when overridng methods with Sorbet signature
+  Severity: convention
+
+Lint/UnusedBlockArgument:
+  # It might be hard to avoid unused method arguments especially when overridng methods with Sorbet signature
+  Severity: convention
+
+Style/NumericPredicate:
+  # Explicit comparison can be safer and is often easier to read
+  Enabled: false
+
+Style/GuardClause:
+  MinBodyLength: 5 # when the body is small, if/else can actually be much more readable
+  Severity: convention
+
+Style/RescueStandardError:
+  Severity: convention
+
+Style/FrozenStringLiteralComment:
+  Severity: convention
+
+Style/DoubleNegation:
+  # double negation allows convenient conversion of false/nil to false and others to true
+  Enabled: false
+
+Style/RaiseArgs:
+  Severity: convention
+
+Style/WordArray:
+  # normal array style makes it easier to modify the items
+  Enabled: false
+
+Style/SymbolArray:
+  # normal array style makes it easier to modify the items
+  Enabled: false
+
+Style/RegexpLiteral:
+  # we use common-style regexp expression wrapped by slashes
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Severity: convention
+
+Lint/DuplicateBranch:
+  # separate branches can be more readable, especially when we want the branches to follow a certain logical order
+  # We might intentionally separate the branches because those branches are semantically different, and it is just coincidental that their bodies are the same
+  Severity: convention
+
+Lint/AmbiguousBlockAssociation:
+  # TODO: improve Sorbet lazy syntax and bump this to warning?
+  Severity: convention
+
+Style/StringLiterals:
+  # By using single quotes for plain string literals, we can avoid mental overhead when reading those literals, because they will be kept as-is.
+  # Although modifying between single-quoted and double-quoted literals can be inconvenient, it can be autocorrected by rubocop
+  Severity: warning
+
+Style/SlicingWithRange:
+  # Explicit range end is more familiar to us
+  Enabled: false
+
+Style/IfWithBooleanLiteralBranches:
+  # We might intentionally keep `else` for 'unknown' cases
+  Severity: convention
+
+Style/CommentAnnotation:
+  Severity: convention
+
+Style/SoleNestedConditional:
+  # The line might get too long and hard-to-read if we merge all conditions into 1 line
+  Severity: convention
+
+Style/OptionalBooleanParameter:
+  # This is good, but we have lots of legacy codes
+  Severity: convention
+
+Style/RedundantSelf:
+  # explicit `self` can help avoid scoping issues, but the codes can be nicer if we try to minimize usage of `self` -> convention is enough
+  Severity: convention
+
+Style/RedundantAssignment:
+  # might be troublesome to clean up the assignment when editing existing codes
+  Severity: convention
+
+Style/RedundantArgument:
+  # Hiding the argument makes the codes at the call site less readable
+  # Example the default args of chomp and split are different: str.chomp("\n"), str.split(' ')
+  Enabled: false
+
+Style/Semicolon:
+  AllowAsExpressionSeparator: true
+
+Style/SymbolProc:
+  AllowMethodsWithArguments: true
+
+Style/NumericLiterals:
+  # nice to follow but not that important
+  Severity: convention
+
+Style/EmptyElse:
+  # Warn on empty only. Explicit `nil` else can emphasize the intention of the coder
+  EnforcedStyle: empty
+
+Style/AccessorGrouping:
+  # We may want to add sorbet sig to individual accessor
+  Enabled: false
