@@ -15,7 +15,7 @@ class DataGatheringWorker
     job.success
     data
   rescue StandardError => e
-    job.failed
+    job.fail
     raise e
   end
 
@@ -26,7 +26,7 @@ class DataGatheringWorker
       perform_async(source_type, filter_columns, query_key, job_id)
       JSON.parse(lasted_cached_data)
     else
-      self.new.perform(source_type, filter_columns, query_key, job_id)
+      new.perform(source_type, filter_columns, query_key, job_id)
     end
   end
 end

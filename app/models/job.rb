@@ -22,7 +22,7 @@ class Job < ApplicationRecord
   end
 
   def fail
-    update(end_time: Time.current, status: 'failed')
+    update(end_time: Time.current, status: 'failure')
   end
 
   def already_existed
