@@ -2,17 +2,8 @@
 
 class HotelsController < ApplicationController
   def index
-    query_key = Cache.generate_query_key(filter_columns)
-    lasted_cached_data = Cache.retrive_lasted_cache(object_type: 'hotel_json', query_key: query_key)
     job = Job.create(source_type: 'hotel_json', query_key: query_key)
-
-    hotels = if lasted_cached_data.present?
-               DataGatheringWorker.perform_async('hotel_json', filter_columns, query_key, job.id)
-               JSON.parse(lasted_cached_data)
-             else
-               DataGatheringWorker.new.perform('hotel_json', filter_columns, query_key, job.id)
-             end
-
+    hotels = DataGatheringWorker.may_be_async('hotel_json', filter_columns, query_key, job.id)
     render json: hotels
   rescue StandardError => e
     render json: { error: e }, status: 400

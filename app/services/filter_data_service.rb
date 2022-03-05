@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FilterGenerator
+class FilterDataService
   def self.generate_filters(filter_columns)
     filter_columns.map do |column_name, filter_values|
       {
