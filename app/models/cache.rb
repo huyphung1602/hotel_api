@@ -17,11 +17,7 @@ class Cache < ApplicationRecord
 
   def self.retrive_lasted_cache(object_type:, query_key:)
     cache_key = Cache.where(object_type: object_type, query_key: query_key).order(created_at: :desc).first&.query_key
-    if cache_key.present?
-      $redis_cache.get(query_key)
-    else
-      nil
-    end
+    cache_key.present? ? $redis_cache.get(query_key) : nil
 
   # We log the error because getting the data from cache should not raise error that block the main procedure (which is return the data)
   rescue StandardError => e
