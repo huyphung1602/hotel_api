@@ -25,8 +25,8 @@ describe DataFetcher do
 
     context 'one of the fetch source is not working correctly' do
       before do
-        allow(Net::HTTP).to receive(:get).and_call_original
         supplier_2_url = URI(HotelSource::SUPPLIER_2[:url])
+        allow(Net::HTTP).to receive(:get).and_call_original
         allow(Net::HTTP).to receive(:get).with(supplier_2_url).and_raise('Connection error ahihi')
       end
 
