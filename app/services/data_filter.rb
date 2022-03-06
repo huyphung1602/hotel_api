@@ -15,7 +15,7 @@ class DataFilter
 
   private
 
-  attr_reader :filters, :data_source, :blocks
+  attr_reader :filters, :blocks
 
   def is_matched_row?(row, query_columns_mapping)
     filters.map do |filter|
