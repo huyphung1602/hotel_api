@@ -1,19 +1,22 @@
 # frozen_string_literal: true
 
 class DataFilter
-  def initialize(source_type, filter_columns, rows)
-    @rows = rows
+  def initialize(source_type, filter_columns, blocks)
+    @blocks = blocks
     @filters = build_filter(filter_columns)
-    @data_source = DataSource.get_source(source_type)
+    @data_source = DataSource.from_source_type(source_type)
   end
 
   def execute
-    rows.map { |row| row if is_matched_row? }.compact
+    blocks.map do |block|
+      block[:rows] = block[:rows].map { |row| row if is_matched_row? }.compact
+      block
+    end
   end
 
   private
 
-  attr_reader :filters, :data_source, :rows
+  attr_reader :filters, :data_source, :blocks
 
   def is_matched_row?
     filters.each do |filter|

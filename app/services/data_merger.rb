@@ -2,17 +2,26 @@
 
 class DataMerger
   def initialize(source_type)
-    @data_source = DataSource.get_source(source_type)
+    @data_source = DataSource.from_source_type(source_type)
     @merger = get_merger(source_type)
   end
 
-  def execute(raw_rows)
-    merged_data_as_hash = raw_rows.each_with_object({}) do |row, hash|
-      merging_row_id = data_source.get_id(row)
+  def execute(blocks)
+    merged_data_as_hash = {}
 
-      merging_row = hash[merging_row_id].present? ? hash[merging_row_id] : {}
-      merged_row = merger.merge!(merging_row, row)
-      hash[merging_row_id] = merged_row
+    # binding.pry
+
+    blocks.each do |block|
+      raw_rows = block[:rows]
+      column_aliaes_mapping = block[:column_aliaes_mapping]
+
+      raw_rows.each do |row|
+        merging_row_id = data_source.get_id(row)
+
+        merging_row = merged_data_as_hash[merging_row_id].present? ? merged_data_as_hash[merging_row_id] : {}
+        merged_row = merger.merge!(merging_row, row, column_aliaes_mapping)
+        merged_data_as_hash[merging_row_id] = merged_row
+      end
     end
 
     merged_data_as_hash.values

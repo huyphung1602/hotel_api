@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class DataSource
-  def self.get_source(source_type)
+  def self.from_source_type(source_type)
     case source_type.to_sym
     when :hotel_json
       HotelSource

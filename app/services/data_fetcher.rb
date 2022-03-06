@@ -2,14 +2,19 @@
 
 class DataFetcher
   def self.execute(source_type)
-    source_urls = DataSource.get_source(source_type).get_source_urls
-    source_urls.reduce([]) do |arr, url|
-      uri = URI(url)
+    sources = DataSource.from_source_type(source_type).get_sources
+    sources.reduce([]) do |arr, source|
+      uri = URI(source[:url])
       responses = JSON.parse(Net::HTTP.get(uri))
 
       # We are fetching data from many sources, puts the error instead of raising it
       if responses.is_a?(Array)
-        arr += responses
+        # Data from each supplier was wrapped inside a block which contain the necessary information
+        arr << {
+          name: source[:name],
+          rows: responses,
+          column_aliaes_mapping: source[:column_aliaes_mapping],
+        }
       else
         Rails.logger.error "DataFetcher: Expecting parsed response as an array: #{responses.inspect}"
       end

@@ -9,7 +9,7 @@ class Cache < ApplicationRecord
     RedisCache.redis.set(query_key, json_data)
     # We log the error because caching the data is should not raise error that block the main procedure (which is return the data)
   rescue StandardError => e
-    Rails.logger.error "Fail to set cach for #{object_type} with #{query_key}"
+    Rails.logger.error "Fail to set cache for #{object_type} with #{query_key}"
     Rails.logger.error e.inspect
   end
 

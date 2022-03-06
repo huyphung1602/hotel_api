@@ -2,36 +2,13 @@
 
 module Mergers
   class HotelMerger
-    COLUMN_ALIASES_MAPPING = {
-      id: 'id',
-      hotel_id: 'id',
-      destination_id: 'destination_id',
-      destination: 'destination_id',
-      name: 'name',
-      hotel_name: 'name',
-      lat: 'lat',
-      latitude: 'lat',
-      lng: 'lng',
-      longitude: 'lng',
-      address: 'address',
-      city: 'city',
-      country: 'country',
-      location: 'location',
-      description: 'description',
-      details: 'description',
-      info: 'description',
-      amenities: 'amenities',
-      facilities: 'amenities',
-      images: 'images',
-      booking_conditions: 'booking_conditions',
-    }.freeze
-
     LOCATION_GROUPING = {
       lat: true,
       lng: true,
       address: true,
       city: true,
       country: true,
+      postal_code: true,
       location: true,
     }.freeze
 
@@ -42,11 +19,11 @@ module Mergers
 
     class << self
       # Add location key => select_correct_columns => strip value if needded => select between adhoc merge, location merge, normal merge
-      def merge!(merging_row, raw_row)
+      def merge!(merging_row, raw_row, column_aliaes_mapping)
         merging_row['location'] = {} if merging_row['location'].nil?
 
         raw_row.each do |key, value|
-          column_name = COLUMN_ALIASES_MAPPING[key.underscore.to_sym]
+          column_name = column_aliaes_mapping[key.underscore.to_sym]
 
           next if column_name.nil?
 
