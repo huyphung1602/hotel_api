@@ -75,7 +75,7 @@ describe Mergers::HotelMerger do
       end
 
       it 'return the correct merged row' do
-        merged_row = described_class.merge!({}, raw_rows[0])
+        merged_row = described_class.merge!({}, raw_rows[0], HotelSource::SUPPLIER_1[:column_aliaes_mapping])
         expect(merged_row.to_json).to eq expected_result.to_json
       end
     end
@@ -84,7 +84,7 @@ describe Mergers::HotelMerger do
       let(:expected_result) do
         {
           'location' => { 'address' => '8 Sentosa Gateway, Beach Villas, 098269', 'country' => 'Singapore', 'lat' => 1.264751,
-                          'lng' => 103.824006, 'city' => 'Singapore', },
+                          'lng' => 103.824006, 'city' => 'Singapore', 'postal_code' => '098269', },
           'id' => 'iJhz',
           'destination_id' => 5432,
           'name' => 'Beach Villas Singapore',
@@ -113,9 +113,9 @@ describe Mergers::HotelMerger do
       end
 
       it 'return the correct merged row' do
-        merged_row_1 = described_class.merge!({}, raw_rows[0])
-        merged_row_2 = described_class.merge!(merged_row_1, raw_rows[1])
-        merged_row_3 = described_class.merge!(merged_row_2, raw_rows[2])
+        merged_row_1 = described_class.merge!({}, raw_rows[0], HotelSource::SUPPLIER_1[:column_aliaes_mapping])
+        merged_row_2 = described_class.merge!(merged_row_1, raw_rows[1], HotelSource::SUPPLIER_2[:column_aliaes_mapping])
+        merged_row_3 = described_class.merge!(merged_row_2, raw_rows[2], HotelSource::SUPPLIER_3[:column_aliaes_mapping])
 
         expect(merged_row_3.to_json).to eq expected_result.to_json
       end
