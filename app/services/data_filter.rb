@@ -27,8 +27,8 @@ class DataFilter
   def build_filter(filter_columns)
     filter_columns.map do |column_name, filter_values|
       {
-        column_name: column_name,
-        filter_values: filter_values.each_with_object({}) { |v, h| h[v] = true },
+        column_name: column_name.to_s,
+        filter_values: filter_values.each_with_object({}) { |v, h| h[v.to_s] = true },
       }
     end
   end
