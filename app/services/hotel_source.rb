@@ -31,7 +31,6 @@ class HotelSource
       address: 'address',
       city: 'city',
       country: 'country',
-      postal_code: 'postal_code',
       location: 'location',
       description: 'description',
       facilities: 'amenities',

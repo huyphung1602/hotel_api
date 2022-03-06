@@ -84,7 +84,7 @@ describe Mergers::HotelMerger do
       let(:expected_result) do
         {
           'location' => { 'address' => '8 Sentosa Gateway, Beach Villas, 098269', 'country' => 'Singapore', 'lat' => 1.264751,
-                          'lng' => 103.824006, 'city' => 'Singapore', 'postal_code' => '098269', },
+                          'lng' => 103.824006, 'city' => 'Singapore', },
           'id' => 'iJhz',
           'destination_id' => 5432,
           'name' => 'Beach Villas Singapore',

@@ -8,7 +8,6 @@ module Mergers
       address: true,
       city: true,
       country: true,
-      postal_code: true,
       location: true,
     }.freeze
 
