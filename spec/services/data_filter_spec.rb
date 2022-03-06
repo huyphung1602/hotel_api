@@ -6,7 +6,7 @@ describe DataFilter do
   let(:vcr_match_cond) { %i[method uri host path body] }
   let(:blocks) { DataFetcher.execute('hotel_json') }
 
-  subject { described_class.new('hotel_json', filter_columns, blocks)}
+  subject { described_class.new(filter_columns, blocks)}
 
   describe '.execute' do
     context 'no filters appy' do

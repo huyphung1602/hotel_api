@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class DataFilter
-  def initialize(source_type, filter_columns, blocks)
+  def initialize(filter_columns, blocks)
     @blocks = blocks
     @filters = build_filter(filter_columns)
   end
