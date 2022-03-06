@@ -18,10 +18,10 @@ class DataFilter
   attr_reader :filters, :data_source, :blocks
 
   def is_matched_row?(row, query_columns_mapping)
-    filters.each do |filter|
+    filters.map do |filter|
       filter_column = query_columns_mapping[filter[:column_name].to_sym]
-      return true unless filter[:filter_values][row[filter_column].to_s]
-    end
+      !!filter[:filter_values][row[filter_column].to_s]
+    end.all?
   end
 
   def build_filter(filter_columns)
