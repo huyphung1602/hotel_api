@@ -42,9 +42,9 @@ describe Cache do
         allow(RedisCache.redis).to receive(:set).and_raise(StandardError.new('Gundam Exia'))
       end
 
-      it 'should not create the related Cache record' do
+      it 'should still create a related Cache record' do
         described_class.set_cache(object_type: object_type, query_key: query_key, json_data: json_data)
-        expect(Cache.all.size).to eq 0
+        expect(Cache.all.size).to eq 1
       end
     end
 
