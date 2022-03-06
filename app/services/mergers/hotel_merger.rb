@@ -83,7 +83,7 @@ module Mergers
       end
 
       def merge_images(merging_image_hash, raw_images_hash, _)
-        normalized_images = normalize_image(raw_images_hash)
+        normalized_images = normalize_image_key_name(raw_images_hash)
 
         # Merge images in the existed key
         merging_image_hash = if merging_image_hash.present?
@@ -107,7 +107,7 @@ module Mergers
         normalized_images.merge(merging_image_hash) # merge new keys
       end
 
-      def normalize_image(images_hash)
+      def normalize_image_key_name(images_hash)
         images_hash.transform_values do |images|
           images.map do |image|
             link = image['link'] || image['url']
